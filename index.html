@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnimeKisa to Gogo</title>
+    <script src="api_gogo.js"></script>
+</head>
+<body>
+    <!-- make two textarea the first one is called old-favs and the second one new-favs-->
+    <textarea class="old-favs" id="" cols="30" rows="10"></textarea>
+    <textarea class="new-favs" id="" cols="30" rows="10" disabled></textarea>
+    <button id="btn-submit" onclick="javascript:toGogo(document.querySelector('.old-favs').value)">Transfer</button>
+    <button class="copy" onclick="javascript: navigator.clipboard.writeText(document.querySelector('.new-favs').value).then((function(){alert('Async: Copying to clipboard was successful!')}),(function(t){alert('Async: Could not copy text: ',t)}));;">Copy</button>
+    <p class="progress_p">Waiting for you to load the text and click on Migrate. When clicking on it, it might take a lot of time,if you have a lot of favorites, for this text to update</p>
+</body>
+</html>

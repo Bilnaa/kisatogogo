@@ -26,41 +26,80 @@ function toGogo(favorites) {
     var favorites = text.favorites;
     var newFavorites = [];
     for (favs of favorites) {
-        if (favs.moduleID == "3489230942384712") {
-            var title = favs.request.url.split('\/').pop().replace('---', '-').replace('dubbed', 'dub');
+        if (favs.request.url.includes('animekisa.tv')) {
+            var titleArray = favs.title.replace(' ', '-').replace('-tv', '').replace('-tv-', '-').replace(':', '').replace('--', '-').replace('!', '').toLowerCase().split('-');
+            var title = favs.request.url.split('\/').pop().replace('---', '-').replace('-tv', '').replace('-tv-', '-').replace('dubbed', 'dub').replace(':', '');
             if (title.length > 45) {
                 title = title.split('-')[0] + '-' + title.split('-').pop();
             }
             var url = `https://gogoanime.herokuapp.com/search?keyw=${title}`;
             var json = getFile(url);
+            console.log(json);
             var data = JSON.parse(json);
-            for (var x = 0; x < data.length; x++) {
-                var anime = data[x];
-                var titleArray = favs.title.toLowerCase().split(" ");
-                if (anime.animeId == title) {
-                    favs.request.url = anime.animeUrl;
-                    favs.image.url = encodeURI(anime.animeImg);
-                    favs.urlIdentifier = favs.request.url;
-                } else if (anime.animeId.includes('dub') && !title.includes('dub')) {
+            if (json == '[]') {
+                url = `https://gogoanime.herokuapp.com/search?keyw=${titleArray[0]}`;
+                json = getFile(url);
+            }
+            data = JSON.parse(json);
+            if (!json == '[]') {
+                console.log('here')
+                if (!title.includes('dub') && anime.animeId.includes('dub')) {
                     continue
-                } else if (data.length == 1) {
+                } else {
                     favs.request.url = anime.animeUrl;
                     favs.image.url = encodeURI(anime.animeImg);
                     favs.urlIdentifier = favs.request.url;
-                } else {
-                    console.log('here')
-                    for (word of titleArray) {
-                        if (anime.animeId.includes(word)) {
+                    break;
+                }
+                newFavorites.push(favs);
+            } else {
+                for (var x = 0; x < data.length; x++) {
+                    var anime = data[x];
+                    if (anime.animeId == title) {
+                        favs.request.url = anime.animeUrl;
+                        favs.image.url = encodeURI(anime.animeImg);
+                        favs.urlIdentifier = favs.request.url;
+                    } else if (anime.animeId.includes('dub') && !title.includes('dub')) {
+                        continue
+                    } else if (data.length == 1) {
+                        favs.request.url = anime.animeUrl;
+                        favs.image.url = encodeURI(anime.animeImg);
+                        favs.urlIdentifier = favs.request.url;
+                    } else if (data.length == 2) {
+                        if (!title.includes('dub') && anime.animeId.includes('dub')) {
+                            continue
+                        } else {
+                            favs.request.url = anime.animeUrl;
+                            favs.image.url = encodeURI(anime.animeImg);
+                            favs.urlIdentifier = favs.request.url;
+                        }
+                    } else if (data.length > 2) {
+                        if (!title.includes('dub') && anime.animeId.includes('dub') && (!anime.animeTitle.match(/\d .+$/gm))) {
+                            continue
+                        } else {
                             favs.request.url = anime.animeUrl;
                             favs.image.url = encodeURI(anime.animeImg);
                             favs.urlIdentifier = favs.request.url;
                             break;
                         }
+                    } else if (anime.animeTitle == favs.title) {
+                        favs.request.url = anime.animeUrl;
+                        favs.image.url = encodeURI(anime.animeImg);
+                        favs.urlIdentifier = favs.request.url;
+                        break
+                    } else {
+                        for (word of titleArray) {
+                            if (anime.animeId.includes(word)) {
+                                favs.request.url = anime.animeUrl;
+                                favs.image.url = encodeURI(anime.animeImg);
+                                favs.urlIdentifier = favs.request.url;
+                            }
+                        }
+                        break;
                     }
-                    break;
                 }
+                newFavorites.push(favs);
             }
-            newFavorites.push(favs);
         } else {
             newFavorites.push(favs);
         }

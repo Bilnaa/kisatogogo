@@ -35,9 +35,9 @@ function toGogo(favorites) {
                     favs.request.url = anime.animeUrl;
                     favs.image.url = encodeURI(anime.animeImg);
                     favs.urlIdentifier = favs.request.url;
+                    newFavorites.push(favs);
                     break;
                 }
-                newFavorites.push(favs);
             } else {
                 for (var x = 0; x < data.length; x++) {
                     var anime = data[x];
